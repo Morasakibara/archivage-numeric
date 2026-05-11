@@ -38,6 +38,16 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Agent Configs & Documentation
+CLAUDE.md
+GEMINI.md
+.gemini/
+skills/
+archivage-numeric-skills.tar.gz
+INSTALLATION.md
+GUIDE_TECHNIQUE.md
+archivage_numerique_cahier_des_charges.md
+
 # Misc
 *.tsbuildinfo
 .expo/
