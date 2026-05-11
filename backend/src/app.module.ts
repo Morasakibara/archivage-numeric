@@ -7,6 +7,8 @@ import jwtConfig from './config/jwt.config';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { AuditModule } from './modules/audit/audit.module';
+import { ReferentielsModule } from './modules/referentiels/referentiels.module';
+import { DossiersModule } from './modules/dossiers/dossiers.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 import { AuditInterceptor } from './common/interceptors/audit.interceptor';
@@ -31,6 +33,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
     AuthModule,
     AuditModule,
     ReferentielsModule,
+    DossiersModule,
   ],
   providers: [
     {
@@ -52,11 +55,6 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
     {
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,
-    },
-  ],
-})
-export class AppModule {}
-ionFilter,
     },
   ],
 })
