@@ -30,6 +30,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
     UsersModule,
     AuthModule,
     AuditModule,
+    ReferentielsModule,
   ],
   providers: [
     {
@@ -51,6 +52,11 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
     {
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,
+    },
+  ],
+})
+export class AppModule {}
+ionFilter,
     },
   ],
 })
