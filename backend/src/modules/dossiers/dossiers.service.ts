@@ -1,12 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Dossier } from './entities/dossier.entity';
 import { CreateDossierDto } from './dto/create-dossier.dto';
 import { UpdateDossierDto } from './dto/update-dossier.dto';
 import { SearchDossierDto } from './dto/search-dossier.dto';
 import { DossiersNumeroService } from './dossiers-numero.service';
 import { AuditService } from '../audit/audit.service';
+import { RedisService } from '../../common/services/redis.service';
+import { StatutDossier } from '../../common/types/statuts.enum';
 
 @Injectable()
 export class DossiersService {
@@ -15,6 +17,7 @@ export class DossiersService {
     private readonly dossierRepository: Repository<Dossier>,
     private readonly numeroService: DossiersNumeroService,
     private readonly auditService: AuditService,
+    private readonly redisService: RedisService,
   ) {}
 
   async create(createDto: CreateDossierDto, createurId: string): Promise<Dossier> {
@@ -24,7 +27,9 @@ export class DossiersService {
       numero,
       createurId,
     });
-    return this.dossierRepository.save(dossier);
+    const result = await this.dossierRepository.save(dossier);
+    await this.redisService.del('stats_dashboard');
+    return result;
   }
 
   async findOne(id: string, utilisateurId?: string): Promise<Dossier> {
@@ -96,10 +101,17 @@ export class DossiersService {
   async update(id: string, updateDto: UpdateDossierDto): Promise<Dossier> {
     const dossier = await this.findOne(id);
     Object.assign(dossier, updateDto);
-    return this.dossierRepository.save(dossier);
+    const result = await this.dossierRepository.save(dossier);
+    await this.redisService.del('stats_dashboard');
+    return result;
   }
 
   async getStats() {
+    const cachedStats = await this.redisService.get('stats_dashboard');
+    if (cachedStats) {
+      return JSON.parse(cachedStats);
+    }
+
     const total = await this.dossierRepository.count();
     const nouveaux = await this.dossierRepository.count({ where: { statut: StatutDossier.NOUVEAU } });
     const enInstruction = await this.dossierRepository.count({ where: { statut: StatutDossier.EN_INSTRUCTION } });
@@ -127,7 +139,7 @@ export class DossiersService {
       activiteRecente.push({ date: dateStr, count });
     }
 
-    return {
+    const stats = {
       total,
       nouveaux,
       enInstruction,
@@ -136,5 +148,9 @@ export class DossiersService {
       parType: parTypeRaw.map(t => ({ type: t.type, count: parseInt(t.count, 10) })),
       activiteRecente,
     };
+
+    await this.redisService.set('stats_dashboard', JSON.stringify(stats), 300);
+
+    return stats;
   }
 }

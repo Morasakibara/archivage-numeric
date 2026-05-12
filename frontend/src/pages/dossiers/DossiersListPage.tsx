@@ -11,11 +11,13 @@ import { cn } from '../../lib/utils';
 import apiClient from '../../api/client';
 import { ApiResponse } from '../../types/api.types';
 import { useNavigate } from 'react-router-dom';
+import { useDebounce } from '../../hooks/useDebounce';
 
 export default function DossiersListPage() {
   const navigate = useNavigate();
   const [showFilters, setShowFilters] = useState(false);
   const [types, setTypes] = useState<any[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [params, setParams] = useState({
     page: 1,
     q: '',
@@ -23,6 +25,12 @@ export default function DossiersListPage() {
     typeIntervention: '',
     priorite: '',
   });
+
+  const debouncedSearch = useDebounce(searchTerm, 500);
+
+  useEffect(() => {
+    setParams(p => ({ ...p, q: debouncedSearch, page: 1 }));
+  }, [debouncedSearch]);
 
   useEffect(() => {
     apiClient.get<ApiResponse<any[]>>('/referentiels/types').then(res => {
@@ -54,6 +62,7 @@ export default function DossiersListPage() {
   };
 
   const resetFilters = () => {
+    setSearchTerm('');
     setParams({
       page: 1,
       q: '',
@@ -92,8 +101,8 @@ export default function DossiersListPage() {
               type="text"
               placeholder="Rechercher par numéro, nom client, compteur..."
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={params.q}
-              onChange={(e) => setParams({ ...params, q: e.target.value, page: 1 })}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <Button 

@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Système d'Archivage Numérique — Entreprise d'Électricité
 
-## Getting Started
+Application fullstack moderne dédiée à la numérisation, au suivi et à l'archivage sécurisé des dossiers clients pour une entreprise d'électricité (Cameroun).
 
-First, run the development server:
+## 🚀 Fonctionnalités Clés
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Multi-plateforme** : Interface Web (React) pour le bureau et Application Mobile (Expo) pour le terrain.
+- **Workflow Métier** : Cycle de vie complet des dossiers (Nouveau -> Instruction -> Validation -> Archivé).
+- **Capture Mobile** : Prise de photos terrain, compression automatique et upload sécurisé.
+- **Reporting Avancé** : Dashboard de statistiques, exports PDF (fiches) et CSV (données).
+- **Sécurité & Traçabilité** : 
+    - Authentification JWT avec rôles (Terrain, Bureau, Superviseur, Admin).
+    - Audit Trail complet (chaque action est logguée).
+    - Stockage d'objets sécurisé avec MinIO (S3-compatible).
+    - Protection contre le brute-force et headers sécurisés.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Stack Technique
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Backend** : NestJS, TypeORM, PostgreSQL, Redis (Cache), MinIO (Stockage).
+- **Frontend Web** : React 18, Vite, Tailwind CSS, TanStack Query, Zustand.
+- **Mobile** : React Native, Expo, Expo Router.
+- **Infrastructure** : Docker Compose, Nginx.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📦 Installation (Docker)
 
-## Learn More
+1. Clonez le dépôt.
+2. Configurez le fichier `.env` (copiez `.env.example`).
+3. Lancez l'infrastructure :
+   ```bash
+   docker-compose up -d
+   ```
+4. Accédez à l'interface web sur `http://localhost`.
 
-To learn more about Next.js, take a look at the following resources:
+## 📖 Documentation
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Consultez le dossier `/docs` pour plus de détails :
+- `guide-technique.md` : Détails d'implémentation et architecture.
+- `cahier-des-charges.md` : Spécifications fonctionnelles et règles métier.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+*Projet réalisé en 15 semaines (Mai 2026).*
