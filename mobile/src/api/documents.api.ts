@@ -21,4 +21,12 @@ export const documentsApi = {
     });
     return response.data;
   },
+  findByDossier: async (dossierId: string) => {
+    const response = await apiClient.get(`/dossiers/${dossierId}/documents`);
+    return response.data;
+  },
+  getPresignedUrl: async (documentId: string) => {
+    const response = await apiClient.get(`/documents/${documentId}/url`);
+    return response.data;
+  },
 };
