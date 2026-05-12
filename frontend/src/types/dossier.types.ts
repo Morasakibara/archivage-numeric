@@ -27,6 +27,19 @@ export interface Dossier {
   archiveLe?: string;
 }
 
+export interface HistoriqueStatut {
+  id: string;
+  dossierId: string;
+  statutAvant: StatutDossier | null;
+  statutApres: StatutDossier;
+  commentaire?: string;
+  effectuePar: {
+    nom: string;
+    prenom: string;
+  };
+  effectueLe: string;
+}
+
 export interface DossierListItem extends Dossier {
   createur: {
     nom: string;

@@ -25,6 +25,7 @@ function App() {
         >
           <Route index element={<Navigate to="/dossiers" />} />
           <Route path="dossiers" element={<DossiersListPage />} />
+          <Route path="dossiers/:id" element={<DossierDetailPage />} />
           {/* Les autres routes seront ajoutées plus tard */}
         </Route>
       </Routes>
