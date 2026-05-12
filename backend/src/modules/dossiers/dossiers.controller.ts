@@ -10,6 +10,12 @@ import { Role } from '../../common/types/roles.enum';
 export class DossiersController {
   constructor(private readonly dossiersService: DossiersService) {}
 
+  @Get('stats')
+  @Roles(Role.SUPERVISEUR, Role.ADMIN)
+  getStats() {
+    return this.dossiersService.getStats();
+  }
+
   @Post()
   create(@Body() createDto: CreateDossierDto, @Request() req) {
     return this.dossiersService.create(createDto, req.user.id);

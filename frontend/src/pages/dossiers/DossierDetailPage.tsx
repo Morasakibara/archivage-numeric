@@ -5,16 +5,17 @@ import { documentsApi } from '../../api/documents.api';
 import { notesApi } from '../../api/notes.api';
 import { getStatutConfig } from '../../lib/statuts';
 import { formatDate } from '../../lib/date';
-import { Calendar, User, Hash, Tag, FileText, MessageSquare, History } from 'lucide-react';
+import { Calendar, User, Hash, Tag, FileText, MessageSquare, History, Image as ImageIcon } from 'lucide-react';
 import DocumentGrid from '../../components/documents/DocumentGrid';
 import DocumentUpload from '../../components/documents/DocumentUpload';
 import NotesList from '../../components/notes/NotesList';
 import NoteForm from '../../components/notes/NoteForm';
 import DossierTimeline from '../../components/dossiers/DossierTimeline';
+import DossierActions from '../../components/dossiers/DossierActions';
 import { useAuthStore } from '../../store/auth.store';
 import apiClient from '../../api/client';
 import { ApiResponse } from '../../types/api.types';
-import { HistoriqueStatut } from '../../types/dossier.types';
+import { HistoriqueStatut, StatutDossier } from '../../types/dossier.types';
 
 export default function DossierDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -54,6 +55,15 @@ export default function DossierDetailPage() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['notes', id] }),
   });
 
+  const statusMutation = useMutation({
+    mutationFn: ({ status, comment }: { status: StatutDossier, comment?: string }) => 
+      apiClient.post(`/dossiers/${id}/statut`, { nouveauStatut: status, commentaire: comment }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['dossier', id] });
+      queryClient.invalidateQueries({ queryKey: ['historique', id] });
+    },
+  });
+
   if (isLoadingDossier) return <div className="p-8 text-center text-gray-500">Chargement du dossier...</div>;
   if (!dossierData) return <div className="p-8 text-center text-red-500">Dossier introuvable</div>;
 
@@ -63,7 +73,7 @@ export default function DossierDetailPage() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border flex items-center justify-between">
+      <div className="bg-white p-6 rounded-xl shadow-sm border flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center space-x-4">
           <div className="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
             <FileText size={24} />
@@ -73,11 +83,16 @@ export default function DossierDetailPage() {
             <p className="text-gray-500">{dossier.nomClient}</p>
           </div>
         </div>
-        <div className="flex items-center space-x-4">
+        <div className="flex flex-wrap items-center gap-4">
           <span className={`px-3 py-1 rounded-full text-sm font-semibold ${statusConfig.color} ${statusConfig.textColor}`}>
             {statusConfig.label}
           </span>
-          {/* Boutons d'actions de statut viendront ici */}
+          <DossierActions
+            currentStatut={dossier.statut}
+            userRole={currentUser?.role as any}
+            onAction={(status, comment) => statusMutation.mutate({ status, comment })}
+            isLoading={statusMutation.isPending}
+          />
         </div>
       </div>
 
@@ -186,6 +201,3 @@ export default function DossierDetailPage() {
     </div>
   );
 }
-
-// Re-importing missing Icon
-import { Image as ImageIcon } from 'lucide-react';

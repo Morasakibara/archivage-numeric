@@ -1,7 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from './store/auth.store';
 import LoginPage from './pages/auth/LoginPage';
+import DashboardPage from './pages/DashboardPage';
 import DossiersListPage from './pages/dossiers/DossiersListPage';
+import DossierDetailPage from './pages/dossiers/DossierDetailPage';
 import AppShell from './components/layout/AppShell';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -23,7 +25,8 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<Navigate to="/dossiers" />} />
+          <Route index element={<Navigate to="/dashboard" />} />
+          <Route path="dashboard" element={<DashboardPage />} />
           <Route path="dossiers" element={<DossiersListPage />} />
           <Route path="dossiers/:id" element={<DossierDetailPage />} />
           {/* Les autres routes seront ajoutées plus tard */}

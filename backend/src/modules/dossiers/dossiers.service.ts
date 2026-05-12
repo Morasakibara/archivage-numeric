@@ -98,4 +98,43 @@ export class DossiersService {
     Object.assign(dossier, updateDto);
     return this.dossierRepository.save(dossier);
   }
+
+  async getStats() {
+    const total = await this.dossierRepository.count();
+    const nouveaux = await this.dossierRepository.count({ where: { statut: StatutDossier.NOUVEAU } });
+    const enInstruction = await this.dossierRepository.count({ where: { statut: StatutDossier.EN_INSTRUCTION } });
+    const valides = await this.dossierRepository.count({ where: { statut: StatutDossier.VALIDE } });
+    const rejetes = await this.dossierRepository.count({ where: { statut: StatutDossier.REJETE } });
+
+    const parTypeRaw = await this.dossierRepository
+      .createQueryBuilder('d')
+      .select('d.type_intervention', 'type')
+      .addSelect('COUNT(*)', 'count')
+      .groupBy('d.type_intervention')
+      .getRawMany();
+
+    const activiteRecente = [];
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split('T')[0];
+      
+      const count = await this.dossierRepository
+        .createQueryBuilder('d')
+        .where('DATE(d.cree_le) = :date', { date: dateStr })
+        .getCount();
+      
+      activiteRecente.push({ date: dateStr, count });
+    }
+
+    return {
+      total,
+      nouveaux,
+      enInstruction,
+      valides,
+      rejetes,
+      parType: parTypeRaw.map(t => ({ type: t.type, count: parseInt(t.count, 10) })),
+      activiteRecente,
+    };
+  }
 }
