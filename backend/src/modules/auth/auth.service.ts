@@ -4,15 +4,17 @@ import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { AuditService } from '../audit/audit.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    private readonly auditService: AuditService,
   ) {}
 
-  async login(loginDto: LoginDto) {
+  async login(loginDto: LoginDto, ipAdresse?: string) {
     const user = await this.usersService.findOneByIdentifiant(loginDto.identifiant);
 
     if (!user || !(await bcrypt.compare(loginDto.motDePasse, user.motDePasse))) {
@@ -22,6 +24,12 @@ export class AuthService {
     if (!user.actif || user.bloque) {
       throw new UnauthorizedException('Compte désactivé ou bloqué');
     }
+
+    this.auditService.enregistrer({
+      utilisateurId: user.id,
+      action: 'connexion',
+      ipAdresse,
+    });
 
     const payload = { 
       sub: user.id, 

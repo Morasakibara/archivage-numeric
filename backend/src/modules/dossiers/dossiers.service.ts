@@ -6,6 +6,7 @@ import { CreateDossierDto } from './dto/create-dossier.dto';
 import { UpdateDossierDto } from './dto/update-dossier.dto';
 import { SearchDossierDto } from './dto/search-dossier.dto';
 import { DossiersNumeroService } from './dossiers-numero.service';
+import { AuditService } from '../audit/audit.service';
 
 @Injectable()
 export class DossiersService {
@@ -13,6 +14,7 @@ export class DossiersService {
     @InjectRepository(Dossier)
     private readonly dossierRepository: Repository<Dossier>,
     private readonly numeroService: DossiersNumeroService,
+    private readonly auditService: AuditService,
   ) {}
 
   async create(createDto: CreateDossierDto, createurId: string): Promise<Dossier> {
@@ -25,7 +27,7 @@ export class DossiersService {
     return this.dossierRepository.save(dossier);
   }
 
-  async findOne(id: string): Promise<Dossier> {
+  async findOne(id: string, utilisateurId?: string): Promise<Dossier> {
     const dossier = await this.dossierRepository.findOne({
       where: { id },
       relations: ['createur', 'assigne'],
@@ -33,6 +35,17 @@ export class DossiersService {
     if (!dossier) {
       throw new NotFoundException(`Dossier avec l'ID ${id} introuvable`);
     }
+
+    if (utilisateurId) {
+      this.auditService.enregistrer({
+        utilisateurId,
+        action: 'consultation_dossier',
+        entite: 'dossier',
+        entiteId: id,
+        details: { numero: dossier.numero },
+      });
+    }
+
     return dossier;
   }
 

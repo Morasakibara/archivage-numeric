@@ -5,12 +5,14 @@ import * as bcrypt from 'bcrypt';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { AuditService } from '../audit/audit.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly auditService: AuditService,
   ) {}
 
   async findOneById(id: string): Promise<User> {
@@ -64,7 +66,16 @@ export class UsersService {
   async toggleActive(id: string): Promise<User> {
     const user = await this.findOneById(id);
     user.actif = !user.actif;
-    return this.userRepository.save(user);
+    const result = await this.userRepository.save(user);
+
+    this.auditService.enregistrer({
+      action: user.actif ? 'activation_compte' : 'desactivation_compte',
+      entite: 'user',
+      entiteId: id,
+      details: { identifiant: user.identifiant },
+    });
+
+    return result;
   }
 
   async changePassword(id: string, nouveauMotDePasse: string): Promise<void> {

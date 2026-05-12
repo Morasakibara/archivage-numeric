@@ -21,8 +21,8 @@ export class DossiersController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.dossiersService.findOne(id);
+  findOne(@Param('id') id: string, @Request() req) {
+    return this.dossiersService.findOne(id, req.user.id);
   }
 
   @Get('numero/:numero')

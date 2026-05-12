@@ -33,8 +33,8 @@ export class DocumentsController {
   }
 
   @Get('documents/:id/url')
-  getPresignedUrl(@Param('id') documentId: string) {
-    return this.documentsService.getPresignedUrl(documentId);
+  getPresignedUrl(@Param('id') documentId: string, @Request() req) {
+    return this.documentsService.getPresignedUrl(documentId, req.user.id);
   }
 
   @Patch('documents/:id/invalider')

@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Document } from './entities/document.entity';
 import { MinioService } from './minio.service';
 import { v4 as uuidv4 } from 'uuid';
+import { AuditService } from '../audit/audit.service';
 
 @Injectable()
 export class DocumentsService {
@@ -11,6 +12,7 @@ export class DocumentsService {
     @InjectRepository(Document)
     private readonly documentRepository: Repository<Document>,
     private readonly minioService: MinioService,
+    private readonly auditService: AuditService,
   ) {}
 
   async uploadPhoto(
@@ -49,11 +51,22 @@ export class DocumentsService {
     });
   }
 
-  async getPresignedUrl(documentId: string): Promise<string> {
+  async getPresignedUrl(documentId: string, utilisateurId?: string): Promise<string> {
     const document = await this.documentRepository.findOneBy({ id: documentId });
     if (!document) {
       throw new NotFoundException('Document introuvable');
     }
+
+    if (utilisateurId) {
+      this.auditService.enregistrer({
+        utilisateurId,
+        action: 'telechargement_document',
+        entite: 'document',
+        entiteId: documentId,
+        details: { nomFichier: document.nomFichier, dossierId: document.dossierId },
+      });
+    }
+
     return this.minioService.getPresignedUrl(document.cheminStockage);
   }
 
