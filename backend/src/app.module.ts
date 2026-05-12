@@ -14,6 +14,7 @@ import { DocumentsModule } from './modules/documents/documents.module';
 import { NotesModule } from './modules/notes/notes.module';
 import { StatutsModule } from './modules/statuts/statuts.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
+import { ReportsModule } from './modules/reports/reports.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 import { AuditInterceptor } from './common/interceptors/audit.interceptor';
@@ -43,6 +44,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
     NotesModule,
     StatutsModule,
     NotificationsModule,
+    ReportsModule,
   ],
   providers: [
     {

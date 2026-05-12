@@ -8,7 +8,6 @@ const MENU_ITEMS = [
   { label: 'Dossiers', icon: FolderOpen, href: '/dossiers', roles: ['terrain', 'bureau', 'superviseur', 'admin'] },
   { label: 'Rapports', icon: FileText, href: '/rapports', roles: ['superviseur', 'admin'] },
   { label: 'Utilisateurs', icon: Users, href: '/admin/users', roles: ['admin'] },
-  { label: 'Configuration', icon: Settings, href: '/admin/config', roles: ['admin'] },
 ];
 
 export default function Sidebar() {

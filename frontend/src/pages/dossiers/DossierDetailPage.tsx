@@ -70,6 +70,23 @@ export default function DossierDetailPage() {
   const dossier = dossierData.data;
   const statusConfig = getStatutConfig(dossier.statut);
 
+  const handleExportPdf = async () => {
+    try {
+      const response = await apiClient.get(`/reports/dossier/${id}/pdf`, {
+        responseType: 'blob',
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `fiche_dossier_${dossier.numero}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error('Erreur lors de l''export PDF:', error);
+    }
+  };
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Header */}
@@ -84,6 +101,10 @@ export default function DossierDetailPage() {
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-4">
+          <Button variant="outline" onClick={handleExportPdf} className="flex items-center space-x-2">
+            <Download size={18} />
+            <span>Exporter PDF</span>
+          </Button>
           <span className={`px-3 py-1 rounded-full text-sm font-semibold ${statusConfig.color} ${statusConfig.textColor}`}>
             {statusConfig.label}
           </span>

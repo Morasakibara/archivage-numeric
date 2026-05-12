@@ -4,6 +4,7 @@ import LoginPage from './pages/auth/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import DossiersListPage from './pages/dossiers/DossiersListPage';
 import DossierDetailPage from './pages/dossiers/DossierDetailPage';
+import ReportsPage from './pages/ReportsPage';
 import AppShell from './components/layout/AppShell';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -29,6 +30,7 @@ function App() {
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="dossiers" element={<DossiersListPage />} />
           <Route path="dossiers/:id" element={<DossierDetailPage />} />
+          <Route path="rapports" element={<ReportsPage />} />
           {/* Les autres routes seront ajoutées plus tard */}
         </Route>
       </Routes>
