@@ -1,8 +1,11 @@
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
+import { useNotifications } from '../../hooks/useNotifications';
 
 export default function AppShell() {
+  useNotifications(); // Active le polling global
+
   return (
     <div className="flex h-screen bg-gray-50">
       <Sidebar />
