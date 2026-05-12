@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_GUARD, APP_INTERCEPTOR, APP_FILTER } from '@nestjs/core';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import databaseConfig from './config/database.config';
 import jwtConfig from './config/jwt.config';
 import minioConfig from './config/minio.config';
@@ -27,6 +28,10 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
       isGlobal: true,
       load: [databaseConfig, jwtConfig, minioConfig],
     }),
+    ThrottlerModule.forRoot([{
+      ttl: 60000,
+      limit: 100, // 100 requêtes par minute par IP par défaut
+    }]),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -47,6 +52,10 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
     ReportsModule,
   ],
   providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
